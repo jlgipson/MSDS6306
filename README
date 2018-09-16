@@ -1,0 +1,6 @@
+Hi, My name is Johnny Gipson and this branch of the repository is for all Homework assignments for MSDS6306. 
+You will see rmarkdown and html from Rstudio for Live Session Unit 3 Assignment.  In this assignment,we obtained the titantic data set
+from  https://github.com/caesar0301/awesome-public-datasets. We used this data to create to plot some frequency and use the apply statement 
+in R studio.  We also used the sleep data from http://talklab.psy.gla.ac.uk/L1_labs/lab_1/homework/index.html for practice in creating
+functions.  The last data set we used was from fivethirtyeight and the file was obtained from https://github.com/rudeboybert/fivethirtyeight.
+We used the college data set from fivethirtyeight to help with with Rstudio coding for manipulating data. 
