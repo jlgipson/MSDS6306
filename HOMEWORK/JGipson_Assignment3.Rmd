@@ -1,0 +1,177 @@
+---
+title: "JGipson Live Session Unit  3 Assignment"
+author: "Johnny Gipson"
+date: "September 15, 2018"
+output: html_document
+---
+#Questions 1: Github Cloning
+Git Bash was used and the following code was to create and new directory, navigate, and clone the gut hub Repository
+
+Git bash code:
+
+pwd
+
+mkdir JohnnyGipson
+
+cd JohnnyGipson
+
+git clone https://github.com/caesar0301/awesome-public-datasets
+
+#Question 2a: Read Titantic Data Set and Create Data Frame
+
+```{r, echo=TRUE}
+Ship <-read.csv(file='C:/Users/Johnny Gipson/Desktop/titanic.csv', header=TRUE)
+class (Ship)
+dim (Ship)
+names (Ship)
+```
+
+#Question 2b:  Frequency Plot of Male and Female
+
+```{r, echo=TRUE}
+library ("ggplot2")
+Shipfreq <-ggplot (Ship) + geom_bar(aes(x=Sex, fill = Sex))
+Shipfreq + ggtitle ("Frequency of Males and Females on the Titanic")
+```
+
+#Question 2c: Use one of apply functions to get the means of Age, Fare, Survival
+
+```{r, echo=TRUE}
+lapply (Ship["Age"], mean, na.rm=TRUE)
+lapply (Ship["Fare"], mean, na.rm=TRUE)
+lapply (Ship["Survived"], mean, na.rm=TRUE)
+```
+
+#Question 3a - Create Objects for median age, Min and Max Duration of Sleep, Mean and Standard Deviation of RSESS
+
+```{r, echo=TRUE}
+sleep <-read.csv(file='C:/Users/Johnny Gipson/Desktop/sleep_data_01.csv', header=TRUE)
+class(sleep)
+dim (sleep)
+names (sleep)
+MedAge <-function(x) { median(x,na.rm=TRUE)}
+MedAge(sleep$Age)
+MinDuration <-function (x) {min(x,na.rm=TRUE)}
+MinDuration (sleep$Duration)
+MaxDuration <-function (x) {max(x,na.rm=TRUE)}
+MaxDuration (sleep$Duration)
+MEANRSES <-function(x) {mean(x,na.rm=TRUE)}
+MEANRSES(sleep$RSES)
+SDRSES <-function(x) {sd(x,na.rm=TRUE)}
+SDRSES(sleep$RSES)
+```
+
+##Question 3b - Create Data Frame with New Objects
+```{r, echo=TRUE}
+sleepa<-function (x) {data.frame("medianage"= MedAge(sleep$Age),"RSESMean"= MEANRSES(sleep$RSES)/5,"SDRSES"=SDRSES(sleep$RSES)/5, "RangeofDuration"= (MaxDuration(sleep$Duration)-MinDuration(sleep$Duration)))}
+report<-sleepa(sleep)
+report
+```
+
+##Question 3c - Change column names of dataframe 
+```{r, echo=TRUE}
+library(data.table)
+chgname <- function(x) {setnames(x, old=c("medianage","RSESMean","SDRSES","RangeofDuration"), new=c("MedianAge","SelfEsteem","SE_SD","DurationRange"))}
+chgname(report)
+report
+```
+
+##Question 3d - Round the Report to 2 digits
+```{r, echo=TRUE}
+rreport <-function(x) {round(x,2)}
+rreport(report)
+```
+
+##Questions 3e: Run function on your sleep Data
+```{r, echo=TRUE}
+sleep <-read.csv(file='C:/Users/Johnny Gipson/Desktop/sleep_data_01.csv', header=TRUE)
+class(sleep)
+dim (sleep)
+names (sleep)
+MedAge <-function(x) { median(x,na.rm=TRUE)}
+MedAge(sleep$Age)
+MinDuration <-function (x) {min(x,na.rm=TRUE)}
+MinDuration (sleep$Duration)
+MaxDuration <-function (x) {max(x,na.rm=TRUE)}
+MaxDuration (sleep$Duration)
+MEANRSES <-function(x) {mean(x,na.rm=TRUE)}
+MEANRSES(sleep$RSES)
+SDRSES <-function(x) {sd(x,na.rm=TRUE)}
+SDRSES(sleep$RSES)
+sleepa<-function (x) {data.frame("medianage"= MedAge(sleep$Age),"RSESMean"= MEANRSES(sleep$RSES)/5,"SDRSES"=SDRSES(sleep$RSES)/5, "RangeofDuration"= (MaxDuration(sleep$Duration)-MinDuration(sleep$Duration)))}
+report<-sleepa(sleep)
+report
+library(data.table)
+chgname <- function(x) {setnames(x, old=c("medianage","RSESMean","SDRSES","RangeofDuration"), new=c("MedianAge","SelfEsteem","SE_SD","DurationRange"))}
+chgname(report)
+report
+rreport <-function(x) {round(x,2)}
+rreport(report)
+```
+
+##Question 4a:  Install the fivethirtyeight package
+
+Code for install - install.packages("fivethirtyeight")
+```{r, echo=TRUE}
+library("fivethirtyeight")
+```
+
+##Question 4b:Assign the 22nd data set to an object 'df'
+```{r, echo=TRUE}
+data(package="fivethirtyeight")
+class(college_recent_grads)
+df<-data.frame(college_recent_grads)
+```
+
+##Question 4C - URL to the related story
+The first r code used to find the URL came back with a warning message that it could not be found.  So a detail seach on the entire list was made to the URL.
+The URL to the college recent data is http://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/
+
+```{r, echo=TRUE}
+vignette("college_recent_grads", package = "fivethirtyeight")
+vignette("fivethirtyeight", package = "fivethirtyeight")
+```
+
+##Question 4D - Get the dimensions and column names of df
+```{r, echo=TRUE}
+dim(df)
+colnames(df)
+```
+
+##Question 5a -Give column names and count the columns
+```{r, echo=TRUE}
+colnames(df)
+ncol(df)
+```
+
+##Question 5b - Generate a count of each unique Major_category in a data frame
+```{r, echo=TRUE}
+library (plyr)
+x<-count(df$major_category)
+major_count<-as.data.frame(x, row.names=NULL)
+class (major_count)
+major_count
+```
+
+##Question 5c- Create barplot of frequency - to much great coding in ggplot to go to waste. Using barplot() is question 5c.1
+```{r, echo=TRUE}
+library(gcookbook)
+MC<-ggplot(major_count, aes(x=x,y=freq)) + geom_bar(stat="identity", fill="blue", colour="black")+coord_flip()
+MC + ggtitle ("College Majors Picked by Today's College Student") + xlab("College Majors") +ylab ("Frequency")
+```
+
+##Question 5c.1- Create barplot of frequency using barplot()
+```{r, echo=TRUE}
+par(las=2,barplot(major_count$freq, names.arg=major_count$x, horiz=TRUE,col="purple",main="College Majors Picked by Today's College Student", xlab="College Majors", ylab="Frequency" ))
+```
+
+##Question 5d -Write fivethirtyeight data to csv file
+```{r, echo=TRUE}
+write.csv(df,"C:/Users/Johnny Gipson/Desktop/college_recent_grads.csv",row.names=FALSE)
+
+```
+
+##Question 6 Link to my github repository
+https://github.com/jlgipson/MSDS6306
+
+
