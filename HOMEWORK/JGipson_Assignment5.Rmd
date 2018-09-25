@@ -1,0 +1,101 @@
+---
+title: "JGipson_Assignment5"
+author: "Johnny Gipson"
+date: "September 24, 2018"
+output: html_document
+---
+
+##Install libraries
+```{r, echo =TRUE}
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(bitops)
+library(RCurl)
+library(xml2)
+library(rvest)
+library(XML)
+library(ggplot2)
+library(gcookbook)
+```
+
+##Question 1a: Import data file and assign it as data frame object, df
+```{r, echo =TRUE}
+df<-read.table(file='C:/Users/Johnny Gipson/Desktop/yob2016.txt', sep=";", col.names=c("First_Name", "Gender", "Amount_of_Children"))
+str(df)
+```
+
+##Question 1b: Display the summary and Structure of df
+```{r, echo =TRUE}
+summary (df)
+dim(df)
+str(df)
+head (df)
+```
+
+##Question 1c:  FInd the name with the 'yyy'
+```{r, echo =TRUE}
+grep("yyy",df$First_Name)
+df[212,]
+```
+
+##Question 1d: Remove misspelled word from the dataframe 
+```{r, echo =TRUE}
+y2016<-df[-212,]
+grep("yyy",y2016$First_Name)
+str(y2016)
+head(y2016)
+```
+
+##Question 2a: Import data file and assign it as data frame object, df
+```{r, echo =TRUE}
+y2015<-read.table(file='C:/Users/Johnny Gipson/Desktop/yob2015.txt', sep=",", col.names=c("First_Name", "Gender", "Amount_of_Children"))
+str(y2015)
+```
+
+##Question 2b: Look at the last ten rows
+```{r, echo =TRUE}
+tail(y2015, 10)
+```
+Comment: It is surprising that the baby names that begin with Z have the same amount of children.
+
+##Question 2c: Merge y2016 and y2015
+```{r, echo =TRUE}
+dim(y2015)
+dim(y2016)
+final<-merge(y2016,y2015,by="First_Name", type="inner", match="all")
+dim(y2016)
+dim(final)
+str(final)
+head(final)
+```
+
+##Question 3a -Create Total Column
+```{r, echo =TRUE}
+final<-mutate(final, Total = Amount_of_Children.x+Amount_of_Children.y)
+head(final)
+```
+
+##Question 3b - Sort the data by Total
+```{r, echo =TRUE}
+final_sort<-final[order(final$Total, decreasing=TRUE),]
+head(final_sort,20)
+```
+
+##Question 3c -Top 10 Girl Names
+```{r, echo =TRUE}
+final_girl<-subset(final_sort, final_sort$Gender.x=="F"& final_sort$Gender.y=="F")
+head(final_girl, 10)
+Top_Ten_Girl_Names<-final_girl[1:10,]
+Top_Ten_Girl_Names
+```
+
+##Question 3d - Write cvs of Top Ten Girl Names
+```{r, echo =TRUE}
+Top_Ten_Girl_Names<-Top_Ten_Girl_Names[,-(2:5)]
+Top_Ten_Girl_Names
+write.csv(Top_Ten_Girl_Names, file = 'C:/Users/Johnny Gipson/Desktop/Top_Ten_Girl_Names.cvs',row.names=FALSE)
+```
+
+##Question 4:  Upload to HW to Github
+https://github.com/jlgipson/MSDS6306/tree/master/HOMEWORK
