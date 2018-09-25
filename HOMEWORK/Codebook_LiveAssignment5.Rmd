@@ -1,0 +1,118 @@
+---
+title: "Codebook for JGipson_Assignment5"
+author: "Johnny Gipson"
+date: "September 25, 2018"
+output: html_document
+---
+##Codebook for JGipson_Assignment5
+The purpose of this assignment wer to take popular girls and boys names from 2015 and 2016 and create a tidy data set of the top ten girl names.  The Github link https://github.com/jlgipson/MSDS6306/tree/master/HOMEWORK contains holds the data files for the popular name data for 2015 and 2016.  The name of the files for 2015 and 2016 data is y2015.txt and y2016.txt, respectively.  Both files are delimited files.  The 2016.txt file is delimited by ";" and the y2015.txt file is delimited by ",".  The text file do not have column or row names.  The data does give the Name, Gender, and the amount of childern that were given that name in that year.  Please follow the step below to tidy the data and write out to a csv files.
+
+##Variables
+Names-List of popular names
+Gender- Male or Female
+Gender.x - When we do the inner join on merge this be a resulting column.  Some names will into both categories of male and female.  For exampl, Riley can be male or femal name
+Gender.y-When we do the inner join on merge this be a resulting column
+Amount_of_children - Number of Childern given that name
+Amount_of_chidren.x - When we do the inner join on merge this be a resulting column.  Some names will into both categories of male and female.  For exampl, Riley can be male or femal name
+Amount_of_children.y 
+Total - (Amount_of_children.x + Amount_of_children.y)
+
+##Step1: Install libraries 
+
+If you recieve an error message then you must install the package.  Use the install.packages command. Example: install.packages("tidyr")
+```{r, echo =TRUE}
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(bitops)
+library(RCurl)
+library(xml2)
+library(rvest)
+library(XML)
+library(ggplot2)
+library(gcookbook)
+```
+
+##Step2: Import data file.  Asssign column names
+Please realize the directory is currently my labtop directory.  You will want to replace this with your own. I left in in to show the syntax that you will need.
+please pay attention to the "sep". Remember this file is delimited by a semicolon.
+```{r, echo =TRUE}
+df<-read.table(file='C:/Users/Johnny Gipson/Desktop/yob2016.txt', sep=";", col.names=c("First_Name", "Gender", "Amount_of_Children"))
+str(df)
+```
+
+##Step3: Lets look at the Data.  Display summary and Structure of df
+```{r, echo =TRUE}
+summary (df)
+dim(df)
+str(df)
+head (df)
+```
+
+##Step 4:  FInd the name with the 'yyy'
+```{r, echo =TRUE}
+grep("yyy",df$First_Name)
+df[212,]
+```
+
+##Step5: Remove misspelled word from the dataframe 
+```{r, echo =TRUE}
+y2016<-df[-212,]
+grep("yyy",y2016$First_Name)
+str(y2016)
+head(y2016)
+```
+
+##Step6: Import data file and assign it as data frame object, df
+please pay attention to the "sep". Remember this file is delimited by a comma.
+```{r, echo =TRUE}
+y2015<-read.table(file='C:/Users/Johnny Gipson/Desktop/yob2015.txt', sep=",", col.names=c("First_Name", "Gender", "Amount_of_Children"))
+str(y2015)
+```
+
+##Step 6: Look at the last ten rows
+```{r, echo =TRUE}
+tail(y2015, 10)
+```
+Comment: It is surprising that the baby names that begin with Z have the same amount of children.
+
+##Step 7:=Merge y2016 and y2015
+```{r, echo =TRUE}
+dim(y2015)
+dim(y2016)
+final<-merge(y2016,y2015,by="First_Name", type="inner", match="all")
+dim(y2016)
+dim(final)
+str(final)
+head(final)
+```
+
+##Step 8 -Create Total Column
+Total column will be a new varaible and will add the columns of Amount of children from the two different data sets
+```{r, echo =TRUE}
+final<-mutate(final, Total = Amount_of_Children.x+Amount_of_Children.y)
+head(final)
+```
+
+##Step 9 - Sort the data by Total
+```{r, echo =TRUE}
+final_sort<-final[order(final$Total, decreasing=TRUE),]
+head(final_sort,20)
+```
+
+##Step 10 -Top 10 Girl Names- We Have Tidy Data
+```{r, echo =TRUE}
+final_girl<-subset(final_sort, final_sort$Gender.x=="F"& final_sort$Gender.y=="F")
+head(final_girl, 10)
+Top_Ten_Girl_Names<-final_girl[1:10,]
+Top_Ten_Girl_Names
+```
+
+##Step 11 - Write cvs of Top Ten Girl Names
+Please realize the directory is currently my labtop directory.  You will want to replace this with your own.  I left in in to show the syntax that you will need.
+```{r, echo =TRUE}
+Top_Ten_Girl_Names<-Top_Ten_Girl_Names[,-(2:5)]
+Top_Ten_Girl_Names
+write.csv(Top_Ten_Girl_Names, file = 'C:/Users/Johnny Gipson/Desktop/Top_Ten_Girl_Names.cvs',row.names=FALSE)
+```
+
