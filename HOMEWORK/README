@@ -7,3 +7,6 @@ functions.  The last data set we used was from fivethirtyeight and the file was 
 https://github.com/rudeboybert/fivethirtyeight. We used the college data recent grad date set from fivethirtyeight 
 to help with with Rstudio coding for manipulating data.  The college,sleep,and titantic data set are available as csv files
 on this page or you can go to the source which were mentioned earlier in the text.
+
+Added files to the repository are JGipson_Assignment5.rmd, JGipson_Assignment5.html, yob2015.txt, yob2016.txt, 
+Top_Ten_Girl_Names.csv, and a Codebook.  The Codebook will give all the revelant information needed to help reproduce the work.
