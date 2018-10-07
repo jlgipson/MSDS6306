@@ -1,0 +1,95 @@
+---
+title: "CaseStudy"
+author: "Johnny Gipson"
+date: "October 6, 2018"
+output: html_document
+---
+
+##Install libraries
+```{r, echo=TRUE}
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(bitops)
+library(RCurl)
+library(xml2)
+library(rvest)
+library(XML)
+library(ggplot2)
+library(gcookbook)
+```
+##Question 1: How many brewies are present in each state
+```{r, echo=TRUE, fig.width=14}
+Breweries<-read.csv(file='C:/Users/Johnny Gipson/Desktop/Breweries.csv')
+dim(Breweries)
+str(Breweries)
+head(Breweries, 10)
+tail(Breweries,10)
+Breweries_state<-summarise(group_by(Breweries,State), count=n())
+Breweries_state
+Breweries_state<-data.frame(Breweries_state)
+dim(Breweries_state)
+str(Breweries_state)
+head(Breweries_state,10)
+Breweries_graph<-ggplot(Breweries_state, aes(x=State,y=count, fill=State)) + geom_bar(stat="identity", colour="black", position=position_dodge(0.7))
+Breweries_graph + ggtitle ("Number of Breweries  per State ") + xlab("States") +ylab ("Number of Breweries") + theme(axis.text.x = element_text(vjust=0.3,hjust=0.3, angle=90))+theme(plot.title=element_text(hjust=0.5,size=16,face="bold.italic"))
+```
+
+##Question 2: Merge beer data with Breweries Data
+```{r, echo=TRUE,}
+Beers<-read.csv(file='C:/Users/Johnny Gipson/Desktop/Beers.csv')
+dim(Beers)
+str(Beers)
+head(Beers, 10)
+tail(Beers,10)
+Brew_beer<-merge(Breweries,Beers, by.x=c("Brew_ID"),by.y=c("Brewery_id"))
+dim(Brew_beer)
+str(Brew_beer)
+head(Brew_beer, 10)
+tail(Brew_beer, 10)
+```
+
+##Question 3: Count the number of NAs in each column
+```{r, echo=TRUE,}
+sum(is.na(Brew_beer))
+sapply(Brew_beer,function(x)sum(is.na(x)))
+```
+
+##Question 4:Compute the median ABV and IBU for each state and plot
+```{r, echo=TRUE,fig.width=14}
+median_woNAs <- function(x) {median(x[which(!is.na(x))])}
+State_ABV<-tapply(Brew_beer$ABV, Brew_beer$State,median_woNAs)
+State_IBU<-tapply(Brew_beer$IBU, Brew_beer$State,median_woNAs)
+State_ABV<-aggregate(Brew_beer$ABV, list(Brew_beer$State),median_woNAs)
+State_IBU<-aggregate(Brew_beer$IBU, list(Brew_beer$State),median_woNAs)
+colnames(State_ABV) <-c("State","ABV_Median")
+colnames(State_IBU) <-c("State","IBU_Median")
+State_beer<-merge(State_ABV,State_IBU, by= "State")
+dim(State_beer)
+str(State_beer)
+head(State_beer)
+tail(State_beer)
+States_graphabv<-ggplot(State_beer, aes(x=State,y=ABV_Median, fill=State)) + geom_bar(stat="identity", colour="black", position=position_dodge(0.7))
+States_graphabv + ggtitle ("ABV_Median by State") + xlab("States") +ylab ("ABV_Median") + theme(axis.text.x = element_text(vjust=0.3,hjust=0.3, angle=90))+theme(plot.title=element_text(hjust=0.5,size=16,face="bold.italic"))
+States_graphibu<-ggplot(State_beer, aes(x=State,y=IBU_Median, fill=State)) + geom_bar(stat="identity", colour="black", position=position_dodge(0.7))
+States_graphibu + ggtitle ("IBU_Median by State") + xlab("States") +ylab ("IBU_Median") + theme(axis.text.x = element_text(vjust=0.3,hjust=0.3, angle=90))+theme(plot.title=element_text(hjust=0.5,size=16,face="bold.italic"))
+```
+Check Data Set, SD breweries have no IBUs in the data set
+
+##Question 5: Which State has the maximum ABV and which stat has the highest IBU.
+
+Kentucky has the highest ABV.  Maine has the highest IBU
+
+##Question 6:Summary statistics for the ABV Variable
+The first is summary statistic of the ABV median variable that was creaed in Question 4.  The second summary statistic is of the merge data of brewery and beer data set in Question 2.
+```{r, echo=TRUE}
+summary(State_beer$ABV_Median)
+summary(Brew_beer$ABV)
+```
+
+##Question 7:
+```{r, echo=TRUE}
+str(Brew_beer)
+ggplot(Brew_beer, aes(x=ABV, y=IBU)) +geom_point()
+```
+There appears to be a positive relationship betwwwn ABV and IBU.  As the beer's ABV increases so does its IBU.  There are many outliers that do not follow this relationship showing high ABV and low to medium IBV.
